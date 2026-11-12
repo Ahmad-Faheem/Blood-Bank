@@ -1,4 +1,4 @@
-# 🩸 Biomedical Blood Bank Management System
+# 🩸 Blood Bank - Blood Management System
 
 A robust, data-validated, and rule-based workflow engine built to handle donor life cycles, patient requests, and real-time inventory threshold compliance using standard clinical principles.
 

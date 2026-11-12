@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="metrics-grid">
+    <div class="metric-card">
+        <h3>Dispatched Requests</h3>
+        <p class="metric-val success" id="approved-count">{{ approved_count }}</p>
+    </div>
+    <div class="metric-card">
+        <h3>Pending Requests</h3>
+        <p class="metric-val warning" id="pending-count">{{ pending_count }}</p>
+    </div>
+</div>
+<section id="requests-table" class="table-content">
+    <section class="section-header">
+        <h3>Blood Donor Requests</h3>
+    </section>
+    <div class="table-container">
+        <table class="admin-table" id="requests-table">
+            <thead>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Requester Entity</th>
+                    <th>Required Group</th>
+                    <th>Units</th>
+                    <th>Request Status</th>
+                    <th>Execution</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in pending_requests %}
+                <tr id="request-row-{{ request.id }}">
+                    <td>#REQ-{{ request.id }}</td>
+                    <td>{{ request.hospital_name }}</td>
+                    <td><strong>{{ request.blood_group }}</strong></td>
+                    <td>{{ request.units_required }}</td>
+                    <td><span class="status-pill pending">Pending</span></td>
+                    <td class="action-cell">
+                        <button class="action-btn success-btn" onclick="moderateRequest('{{ request.id }}','approve', '{{ request.blood_group }}')">Approve & Dispatch</button>
+                        <button class="action-btn danger-btn" onclick="moderateRequest('{{ request.id }}','reject', '{{ request.blood_group }}, {{ request.units_required }}')">Reject</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div id="empty-state" class="empty-state {% if pending_count > 0 %}hidden{% endif %}">
+        <p>🎉 Excellent job! The Blood Request Verification queue is entirely cleared.</p>
+    </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{page_title}}</title>
+    <link rel="stylesheet" href="{% static 'auth-admin.css' %}">
+</head>
+
+<body>
+    <main>
+        <div>
+            <div id="main_heading_box">
+                <h2>Welcome Back</h2>
+                <p>Access the Dashboard and manage the Users.</p>
+            </div>
+            <form class="form" id="admin-login" method="POST">
+                {% csrf_token %}
+                <div id='form_heading'>
+                    <h4>Administrator Login</h4>
+                    <p>Enter your credentials to access Admin Dashboard.</p>
+                </div>
+                <div class="input-container">
+                    <input id="admin_email" name="email" type="email" placeholder=" " required autocomplete="email">
+                    <label for="admin_email">Email Address</label>
+                    <span class="error-text"></span>
+                </div>
+                <div class="input-container">
+                    <input id="admin_pass" name="password" type="password" placeholder=" " required autocomplete="password">
+                    <label for="admin_pass">Password</label>
+                    <span class="error-text"></span>
+                </div>
+                <button type="submit" class="btn-submit">Log In as Admin</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="{% static 'auth-admin.js' %}"></script>
+</body>
+
+</html>

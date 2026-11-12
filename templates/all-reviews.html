@@ -1,0 +1,56 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+    <main class="all-reviews-canvas">
+        <div class="reviews-wrapper">
+
+            <div class="page-intro-header">
+                <h2>Verified Community Reviews</h2>
+                <p>Read transparent, administrative-approved feedback shared by registered donors and regional medical
+                    entities.</p>
+                <div class="red-accent-line"></div>
+            </div>
+
+            <div class="filter-controls-container">
+                <span class="filter-title">Filter by user type:</span>
+                <div class="filter-buttons-group">
+                    <button class="filter-btn active" onclick="filterReviews('all', event)">All Feedback</button>
+                    <button class="filter-btn" onclick="filterReviews('Blood Donor', event)">Blood Donors</button>
+                    <button class="filter-btn" onclick="filterReviews('Patient / Recipient', event)">Hospitals &
+                        Clinics</button>
+                    <button class="filter-btn" onclick="filterReviews('Hospital Representative', event)">Patients &
+                        Recipients</button>
+                </div>
+            </div>
+
+            <div class="reviews-feed-grid" id="approved-reviews-grid">
+                {% for review in reviews %}
+                <div class="approved-review-card" data-role="{{ review.reviewer_role }}">
+                    <div class="review-meta-row">
+                        <div>
+                            <h4>{{ review.reviewer_name }}</h4>
+                            {% if review.reviewer_role == "Blood Donor" %}
+                            <span class="verified-role donor-tag">Verified {{ review.reviewer_role }}</span>
+                            {% elif review.reviewer_role == "Patient / Recipient" %}
+                            <span class="verified-role patient-tag">Verified {{ review.reviewer_role }}</span>
+                            {% else %}
+                            <span class="verified-role hospital-tag">Verified {{ review.reviewer_role }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="star-rating-display">
+                            {% if review.rating == 5 %}★★★★★{% elif review.rating == 4 %}★★★★☆{% elif review.rating == 3 %}★★★☆☆{% elif review.rating == 2 %}★★☆☆☆{% else %}★☆☆☆☆{% endif %}
+                        </div>
+                    </div>
+                    <p class="review-body-text">"{{ review.comment }}"</p>
+                    <span class="review-timestamp">Published : {{ review.created_at|date:"M d, Y" }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="back-home-container">
+                <a href="/" class="btn-back-home">← Return to Homepage</a>
+            </div>
+
+        </div>
+    </main>
+{% endblock %}

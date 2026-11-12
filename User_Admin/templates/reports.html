@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="reports-section">
+    <div class="reports-section-heading">
+        <h3>System Reports & Auditing</h3>
+        <p>Generate immediate system records snapshots and export them as files.</p>
+    </div>
+
+    <div class="reports-grid">
+        <div class="report-export-card">
+            <h4>Current Inventory Records</h4>
+            <p>Detailed units summary grouped by phenotype and component variants.</p>
+            <button class="btn-primary">Download PDF Report</button>
+        </div>
+        <div class="report-export-card">
+            <h4>Donation History Records</h4>
+            <p>Complete historical log containing tracking ids, times, and volume indicators.</p>
+            <button class="btn-primary">Export Excel Sheet</button>
+        </div>
+        <div class="report-export-card">
+            <h4>Dispatch Records </h4>
+            <p>Audit trail tracking outward processing to third-party hospitals and emergency entities.
+            </p>
+            <button class="btn-primary">Download CSV Audit</button>
+        </div>
+    </div>
+</section>
+{% endblock %}

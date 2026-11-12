@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<section>
+    <header class="settings-header">
+        <h2>System Configurations & Rules</h2>
+        <p>Modify automatic thresholds, compliance standards, and automated emergency notification
+            dispatch
+            rules.</p>
+    </header>
+
+    <form id="settings-master-form" method="POST">
+        {% csrf_token %}
+        <section id="inventory-config" class="settings-card">
+            <div class="card-header">
+                <h3>Inventory Levels & Deficit Flags</h3>
+            </div>
+            <div class="card-body">
+                <p class="section-desc">Define the minimum safety buffer volume. When inventory falls
+                    below these units, status alerts change to critical and automated donor notifications
+                    prepare to queue.</p>
+
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label for="low-threshold">Critical Low Trigger (Units):</label>
+                        <input type="number" id="low-threshold" name="low_threshold"
+                            value="{{ settings.low_threshold }}" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="optimal-cap">Target Stock Cap (Units):</label>
+                        <input type="number" id="optimal-cap" name="optimal_cap" value="{{ settings.optimal_cap }}"
+                            min="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="expiration-alert">Days Before Expiration Warning:</label>
+                        <input type="number" id="expiration-alert" name="expiration_alert"
+                            value="{{ settings.expiration_alert_days }}" min="2">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="broadcast-config" class="settings-card">
+            <div class="card-header">
+                <h3>Emergency Donor Broadcast Toggles</h3>
+            </div>
+            <div class="card-body">
+                <div class="toggle-group">
+                    <div>
+                        <label class="switch-label">Automate Donor Deficit Alerts</label>
+                        <p class="section-desc">Instantly alert registered donors via SMS/Email if a
+                            Hospital request cannot be fulfilled due to low stock.</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="auto-broadcast" name="auto_broadcast" 
+                        {% if settings.auto_broadcast %}checked{% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="form-group margin-top">
+                    <label for="broadcast-template">Emergency Request Notification Message
+                        Template:</label>
+                    <textarea id="broadcast-template" name="broadcast_template"
+                        rows="3">{{ settings.broadcast_template }}</textarea>
+                    <small class="help-text">Use system placeholders like <code>{BLOOD_GROUP}</code> and
+                        <code>{UNITS_REQUESTED}</code></small>
+                </div>
+            </div>
+        </section>
+
+        <section id="medical-config" class="settings-card">
+            <div class="card-header">
+                <h3>Donor Eligibility & Health Rules</h3>
+            </div>
+            <div class="card-body">
+                <p class="section-desc">Update text parameters and thresholds checked during screening procedures before
+                    blood collection approval. Changes instantly mirror on the home page guidelines section.</p>
+
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label for="min-age">Minimum Donor Age (Years):</label>
+                        <input type="number" id="min-age" name="min_age" value="{{ settings.min_age }}" min="16"
+                            max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="max-age">Maximum Donor Age (Years):</label>
+                        <input type="number" id="max-age" name="max_age" value="{{ settings.max_age }}" min="50"
+                            max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="min-weight">Minimum Donor Weight (kg):</label>
+                        <input type="number" id="min-weight" name="min_weight" value="{{ settings.min_weight }}"
+                            min="45">
+                    </div>
+                    <div class="form-group">
+                        <label for="surgery-deferral">Surgery Deferral Period (Months):</label>
+                        <input type="number" id="surgery-deferral" name="surgery_deferral"
+                            value="{{ settings.surgery_deferral }}" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="deferral-period">Tattoo Deferral Period (Months):</label>
+                        <input type="number" id="deferral-period" name="deferral_period"
+                            value="{{ settings.deferral_period }}" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="hemoglobin-min">Min Hemoglobin Level (g/dL):</label>
+                        <input type="number" id="hemoglobin-min" name="hemoglobin_min" step="0.1"
+                            value="{{ settings.hemoglobin_min }}">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="settings-actions">
+            <button type="submit" class="save-settings-btn">Save Settings</button>
+        </div>
+    </form>
+</section>
+<script>
+    let submitButtonText;
+    function setSubmittingState(isSubmitting) {
+        const submitButton = document.querySelector("button[type='submit']");
+        if (!submitButton) return;
+        if (isSubmitting) {
+            submitButtonText = submitButton.innerText;
+            submitButton.disabled = true;
+            submitButton.innerText = "Processing...";
+            submitButton.style.opacity = "0.7";
+        } else {
+            submitButton.disabled = false;
+            submitButton.innerText = submitButtonText;
+            submitButton.style.opacity = "1";
+        }
+    }
+
+    function getCsrfToken() {
+        const tokenInput = document.querySelector("[name=csrfmiddlewaretoken]");
+        return tokenInput ? tokenInput.value : "";
+    }
+
+    const toastContainer = document.getElementById('toast-container');
+    const activeTimers = new Map();
+
+    function createToast(type, message) {
+        const id = String(Date.now()); 
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.dataset.id = id;
+        toast.innerHTML = `
+            <span class="toast-msg">${message}</span>
+            <button class="toast-close">&times;</button>
+        `;
+        
+        if (toastContainer) {
+            toastContainer.appendChild(toast);
+        } else {
+            document.body.appendChild(toast);
+        }
+
+        const timer = setTimeout(() => {
+            removeToast(id);
+        }, 4000);
+        
+        activeTimers.set(id, timer);
+
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            removeToast(id);
+        });
+    }
+
+    function removeToast(id) {
+        const stringId = String(id);
+        const toast = document.querySelector(`.toast[data-id="${stringId}"]`);
+        
+        if (toast) {
+            toast.classList.add('fade-out');
+            
+            if (activeTimers.has(stringId)) {
+                clearTimeout(activeTimers.get(stringId));
+                activeTimers.delete(stringId);
+            }
+            
+            const forceRemove = setTimeout(() => {
+                toast.remove();
+            }, 4000);
+
+            toast.addEventListener('animationend', () => {
+                clearTimeout(forceRemove);
+                toast.remove();
+            });
+        }
+    }
+
+    // system settings configurations settings 
+
+    document.getElementById('settings-master-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const data = {
+            low_threshold: document.getElementById('low-threshold').value,
+            optimal_cap: document.getElementById('optimal-cap').value,
+            expiration_alert: document.getElementById('expiration-alert').value,
+            auto_broadcast: document.getElementById('auto-broadcast').checked,
+            broadcast_template: document.getElementById('broadcast-template').value,
+            min_age: document.getElementById('min-age').value,
+            max_age: document.getElementById('max-age').value,
+            min_weight: document.getElementById('min-weight').value,
+            surgery_deferral: document.getElementById('surgery-deferral').value,
+            deferral_period: document.getElementById('deferral-period').value,
+            hemoglobin_min: document.getElementById('hemoglobin-min').value
+        };
+        setSubmittingState(true);
+        fetch("{% url 'system_save_settings' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCsrfToken()
+            },
+            body: JSON.stringify(data)
+        })
+            .then(async response => {
+                const data = await response.json()
+                setSubmittingState(false);
+                if (response.ok) {
+                    if (typeof createToast === 'function') {
+                        createToast('success', data.message);
+                    }
+                } else {
+                    if (typeof createToast === 'function') {
+                        createToast('error', "Error Processing Application Request: " + (data.body.error || "Validation mismatch criteria."));
+                    }
+                }
+            }).catch(err => {
+                if (typeof createToast === 'function') {
+                    createToast('error', "System connection error. Please refresh and try again.")
+                }
+            })
+    });
+</script>
+{% endblock %}

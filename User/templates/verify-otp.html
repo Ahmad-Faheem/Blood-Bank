@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{page_title}}</title>
+    <link rel="stylesheet" href="{% static 'auth.css' %}">
+</head>
+
+<body>
+    <main>
+        <div>
+            <div id="main_heading_box">
+                <h2>OTP Confirmation</h2>
+                <p>Enter OTP that you received via Email.</p>
+            </div>
+            <form class="form" id="otp-verification" method="POST">
+                {% csrf_token %}
+                <div id='form_heading'>
+                    <h4>Verify Identity</h4>
+                    <p>Please enter the 6-digit code sent to your email.</p>
+                </div>
+
+                <div class="otp-wrapper">
+                    <input type="text" class="otp-field" maxlength="1" inputmode="numeric" autocomplete="one-time-code">
+                    <input type="text" class="otp-field" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-field" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-field" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-field" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-field" maxlength="1" inputmode="numeric">
+                </div>
+
+                <input type="hidden" name="otp" id="otp">
+                <span id="otp_error" class="error-text"></span>
+                <span id="non_field_errors"></span>
+
+                <button type="submit" id="submit-btn">Confirm</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="{% static 'auth.js' %}"></script>
+</body>
+
+</html>

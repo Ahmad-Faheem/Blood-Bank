@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<section id="dashboard-tab" class="tab-content active">
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <h3>Availlable Donors</h3>
+            <p class="metric-val">{{ availlable_donors }}</p>
+        </div>
+        <div class="metric-card">
+            <h3>Pending Screenings</h3>
+            <p class="metric-val warning">{{ pending_screenings }}</p>
+        </div>
+        <div class="metric-card">
+            <h3>Pending Requests</h3>
+            <p class="metric-val alert">{{ active_requests }}</p>
+        </div>
+    </div>
+
+    <h3 class="section-title">Live Inventory Status</h3>
+    <div class="inventory-grid">
+        {% for item in inventory_data %}
+        <div class="blood-card {{ item.highlight }}">
+            <div class="blood-card-header">
+                <div>
+                    <span class="type">{{ item.type }}</span>
+                    <p class="label">Availability</p>
+                </div>
+                <img src="{% static item.graph_img %}" alt="status-graph">
+            </div>
+            <div class="status-bar  {{ item.status_class }}"></div>
+            <div class="card-footer">
+                <span>{{ item.label }}</span>
+                <span>{{ item.units }} Units</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

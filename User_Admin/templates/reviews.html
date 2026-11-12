@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="reviews-header">
+    <h2>Public Feedback Moderation</h2>
+    <p class="subtitle">Approve or reject donor and hospital submissions before they display on the public landing page.</p>
+</div>
+<div class="metrics-grid">
+    <div class="metric-card">
+        <h3>Approved Reviews</h3>
+        <p class="metric-val success" id="approved-count">{{ approved_count }}</p>
+    </div>
+    <div class="metric-card">
+        <h3>Awaiting Verification</h3>
+        <p class="metric-val warning" id="pending-count">{{ pending_count }}</p>
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="admin-table" id="reviews-table">
+        <thead>
+            <tr>
+                <th style="width: 15%;">Author Role</th>
+                <th style="width: 20%;">User Details</th>
+                <th style="width: 45%;">Comment Transcript</th>
+                <th style="width: 20%;">Moderation Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for review in pending_reviews %}
+            <tr id="review-row-{{ review.id }}">
+                <td>
+                    <span class="role-pill {% if review.reviewer_role == 'Blood Donor' %}donor{% else %}hospital{% endif %}">
+                        {{ review.reviewer_role }}
+                    </span>
+                </td>
+                <td>
+                    <strong>{{ review.reviewer_name }}</strong><br>
+                    <small>{{ review.reviewer_email }}</small>
+                </td>
+                <td>
+                    <div class="rating-stars">
+                        {% if review.rating == 5 %}★★★★★{% elif review.rating == 4 %}★★★★☆{% elif review.rating == 3 %}★★★☆☆{% elif review.rating == 2 %}★★☆☆☆{% else %}★☆☆☆☆{% endif %}
+                    </div>
+                    <p class="comment-text">"{{ review.comment }}"</p>
+                </td>
+                <td class="action-cell">
+                    <button class="action-btn approve-btn" onclick="moderateReview('{{ review.id }}', 'approve')">Approve</button>
+                    <button class="action-btn reject-btn" onclick="moderateReview('{{ review.id }}', 'reject')">Reject</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="empty-state" class="empty-state {% if pending_count > 0 %}hidden{% endif %}">
+        <p>🎉 Excellent job! The review moderation queue is entirely cleared.</p>
+    </div>
+</div>
+{% endblock %}

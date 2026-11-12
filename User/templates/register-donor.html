@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{page_title}}</title>
+    <link rel="stylesheet" href="{% static 'styling.css' %}">
+</head>
+
+<body>
+    <div class="wizard-container">
+        <h2>Register a Donor</h2>
+        <p class="subtitle">Complete these 3 steps to Register as a Donor.</p>
+
+        <div class="stepper">
+            <div class="step-circle active" id="step-1-circle">1</div>
+            <div class="step-circle" id="step-2-circle">2</div>
+            <div class="step-circle" id="step-3-circle">3</div>
+        </div>
+
+        <form id="register-donor" method="POST">
+            {% csrf_token %}
+            <div class="form-step active" id="step-1">
+                <div class="form-grid">
+                    <div class="input-container full-width">
+                        <input id="donor_name" type="text" name="donor_name" placeholder=" " required>
+                        <label for="donor_name">Full Name <span class="required-star">*</span></label>
+                        <span class="error-text"></span>
+                    </div>
+                    <div class="input-container">
+                        <input id="date_of_birth" name="date_of_birth" type="date" placeholder=" " required>
+                        <label for="date_of_birth">Date of Birth <span class="required-star">*</span></label>
+                        <span class="error-text"></span>
+                    </div>
+                    <div class="input-container">
+                        <select id="gender" name="gender" required>
+                            <option value="" selected disabled></option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                        <label for="gender">Gender <span class="required-star">*</span></label>
+                    </div>
+                    <div class="input-container full-width">
+                        <textarea id="medical_notes" name="medical_notes" placeholder=" "></textarea>
+                        <label for="medical_notes">Medical Notes & Allergies ( Optional )</label>
+                        <span class="error-text"></span>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="form-step" id="step-2">
+                <div class="form-grid">
+                    <div class="input-container">
+                        <input id="email" name="email" type="email" placeholder=" " value="{{ user_email }}" required>
+                        <label for="email">Email Address <span class="required-star">*</span></label>
+                        <span class="error-text"></span>
+                    </div>
+                    <div id="country_code_input_box">
+                        <select id="country_code" name="country_code" required>
+                            <option value="+1">+1 (US)</option>
+                            <option value="+44">+44 (UK)</option>
+                            <option value="+92" selected>+92 (PK)</option>
+                            <option value="+91">+91 (IN)</option>
+                        </select>
+                        <div>
+                            <input id="phone" name="phone" type="tel" required>
+                            <label for="phone">Phone Number <span class="required-star">*</span></label>
+                            <span class="error-text"></span>
+                        </div>
+                    </div>
+                    <div class="input-container full-width">
+                        <input id="address" name="address" type="text" placeholder=" " required>
+                        <label for="address">Address <span class="required-star">*</span></label>
+                        <span class="error-text"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-step" id="step-3">
+                <div class="form-grid">
+                    <div class="file-input-group  full-width">
+                        <label for="donor_report">Blood Report <span class="required-star">*</span></label>
+                        <div class="input-container">
+                            <input id="donor_report" name="donor_report" type="file" accept="image/*" required>
+                        </div>
+                        <span class="error-text"></span>
+                    </div>
+                    <div class="input-container">
+                        <select id="blood_group" name="blood_group" required>
+                            <option value="" selected disabled></option>
+                            <option value="A+">A Positive</option>
+                            <option value="A-">A Negative</option>
+                            <option value="B+">B Positive</option>
+                            <option value="B-">B Negative</option>
+                            <option value="AB+">AB Positive</option>
+                            <option value="AB-">AB Negative</option>
+                            <option value="O+">O Positive</option>
+                            <option value="O-">O Negative</option>
+                        </select>
+                        <label for="blood_group">Blood Group <span class="required-star">*</span></label>
+                    </div>
+                    <div class="input-container">
+                        <input id="weight" name="weight" type="number" step="0.1" placeholder="" required>
+                        <label for="weight">Weight <span class="required-star">*</span></label>
+                        <span class="error-text"></span>
+                    </div>
+                    <div class="radio-group full-width">
+                        <p style="font-size: 14px; color: var(--gray-text);">Donation Type <span
+                                class="required-star">*</span></p>
+                        <div class="radio-options" id="donation_type">
+                            <label class="radio-item">
+                                <input type="radio" name="donation_type" value="whole" checked> Whole Blood
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="donation_type" value="Platelets"> Platelets
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="donation_type" value="Plasma"> Plasma
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="donation_type" value="red cells"> Red Blood Cells
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div id="backend-global-errors" class="full-width hidden">
+                    <div class="error-banner">
+                        <p>Registration Blocked:</p>
+                        <ul id="backend-error-list"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-container">
+                <button type="button" id="backBtn" class="btn-back hidden">Back</button>
+                <button type="button" id="nextBtn" class="btn-next" style="margin-left: auto;">Next</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="{% static 'register-donor.js' %}"></script>
+</body>
+</html>

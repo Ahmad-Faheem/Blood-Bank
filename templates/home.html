@@ -1,0 +1,218 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+    <main class="container">
+        
+        <section class="hero hero-container">
+            <div class="hero-text">
+                <h1>DONATE BLOOD.<br>SAVE A LIFE. IN MINUTES.</h1>
+                <p>Your local donation is the lifeline for patients in need. Join our community of heroes.</p>
+                <div class="hero-cta">
+                    <a href="/User/register-donor/">
+                        <button class="btn-primary">Register a Donor ↗</button>
+                    </a>
+                    <a href="/User/request-blood/">
+                        <button class="btn-secondary">Request Blood</button>
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image-placeholder">
+                <img src="{% static 'images/hero-image.png' %}" alt="hero-illustration">
+            </div>
+        </section>
+        <section id="inventory">
+            <div class="section-header">
+                <h2>Blood Inventry</h2>
+                <p>Here is the Live Blood Inventry Snapshot availlable on our Platform. </p>
+            </div>
+            <div class="inventory-grid">
+                {% for item in inventory_data %}
+                <div class="blood-card {{ item.highlight }}">
+                    <div class="blood-card-header">
+                        <div>
+                            <span class="type">{{ item.type }}</span>
+                            <p class="label">Availability</p>
+                        </div>
+                        <img src="{% static item.graph_img %}" alt="status-graph">
+                    </div>
+                    <div class="status-bar  {{ item.status_class }}"></div>
+                    <div class="card-footer">
+                        <span>{{ item.label }}</span>
+                        <span>{{ item.units }} Units</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        <section id="eligibility-section">
+            <div class="section-header">
+                <h2>Eligibility Guidelines</h2>
+                <p>Ensuring the safety of both our donors and recipients is our top priority.</p>
+            </div>
+            <div class="tabs-container">
+                <button class="tab-btn active-btn" onclick="openTab(event, 'donor')">For Donors</button>
+                <button class="tab-btn" onclick="openTab(event, 'requester')">For Requesters</button>
+            </div>
+
+            <div id="donor" class="tab-content active">
+                <div class="criteria-grid">
+                    <div class="criteria-card">
+                        <h3>Basic Requirements</h3>
+                        <ul>
+                            <li><strong>Age:</strong> Must be between {{ config.min_age }} and {{ config.max_age }}
+                                years old.</li>
+                            <li><strong>Weight:</strong> Minimum weight of Donor, {{ config.min_weight|floatformat:0 }}kg required</li>
+                            <li><strong>Health:</strong> Must feel well and be in good general health on the day of
+                                donation.</li>
+                        </ul>
+                    </div>
+                    <div class="criteria-card">
+                        <h3>Medical History</h3>
+                        <ul>
+                            <li>No major surgery in the last {{ config.surgery_deferral }} months.</li>
+                            <li>Not currently taking antibiotics for active infections.</li>
+                            <li>Must wait {{ config.deferral_period }} months after getting a tattoo or piercing.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="requester" class="tab-content">
+                <div class="criteria-grid">
+                    <div class="criteria-card">
+                        <h3>Who Can Request?</h3>
+                        <ul>
+                            <li>Registered hospitals and Verified individuals</li>
+                            <li>Emergency surgery requirements.</li>
+                            <li>Chronic conditions (e.g., Thalassemia).</li>
+                            <li>Accident or trauma victims.</li>
+                        </ul>
+                    </div>
+                    <div class="criteria-card">
+                        <h3>Documentation Needed</h3>
+                        <ul>
+                            <li>Valid Medical Prescription from a registered doctor.</li>
+                            <li>Patient ID and Hospital Details.</li>
+                            <li>Blood Group Report (if available).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="how-it-works">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Three simple steps to making an life-changing impact today.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <img class="step-image" src="{% static 'images/image-1.png' %}" alt="image-1">
+                    <h3>Step 1</h3>
+                    <p>Register and Screening</p>
+                </div>
+                <div class="step-card">
+                    <img class="step-image" src="{% static 'images/image-2.png' %}" alt="image-2">
+                    <h3>Step 2</h3>
+                    <p>Safe Donation</p>
+                </div>
+                <div class="step-card">
+                    <img class="step-image" src="{% static 'images/image-3.png' %}" alt="image-3">
+                    <h3>Step 3</h3>
+                    <p>Refresh and Recover</p>
+                </div>
+            </div>
+        </section>
+        <section class="reviews-section" id="reviews-section">
+            <div class="reviews-container">
+                <div class="reviews-header">
+                    <span class="section-tagline">Donor & Hospital Testimonials</span>
+                    <h2>What Our Community Says</h2>
+                    <div class="red-bar-accent"></div>
+                </div>
+
+                <div class="reviews-grid-layout">
+                    <div class="review-form-card">
+                        <h3>Leave Your Feedback</h3>
+                        <p>Your experience can encourage others to save lives. Submit your review for administrative
+                            screening.</p>
+
+                        <form id="public-review-form" method="POST" onsubmit="submitReview(event)">
+                            {% csrf_token %}
+                            <div class="form-row-split">
+                                <div class="input-field-group">
+                                    <label for="reviwer_name">Full Name</label>
+                                    <input type="text" id="reviwer_name" name="reviwer_name"
+                                        placeholder=" Your Full Name " required>
+                                </div>
+                                <div class="input-field-group">
+                                    <label for="reviwer_email">Your Email</label>
+                                    <input type="text" id="reviwer_email" name="reviwer_email"
+                                        placeholder=" Your Email ">
+                                </div>
+                                <div class="input-field-group full-width">
+                                    <label for="reviwer_role">I am a...</label>
+                                    <select id="reviwer_role" name="reviwer_role" required>
+                                        <option value="" disabled selected>Select your role</option>
+                                        <option value="Blood Donor">Blood Donor</option>
+                                        <option value="Patient / Recipient">Patient / Recipient</option>
+                                        <option value="Hospital Representative">Hospital Representative</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="rating-selection-wrapper">
+                                <label>Your Rating</label>
+                                <div class="star-rating-selector">
+                                    <input type="radio" name="user-rating" id="star5" value="5" required><label
+                                        for="star5" title="5 stars">★</label>
+                                    <input type="radio" name="user-rating" id="star4" value="4"><label for="star4"
+                                        title="4 stars">★</label>
+                                    <input type="radio" name="user-rating" id="star3" value="3"><label for="star3"
+                                        title="3 stars">★</label>
+                                    <input type="radio" name="user-rating" id="star2" value="2"><label for="star2"
+                                        title="2 stars">★</label>
+                                    <input type="radio" name="user-rating" id="star1" value="1"><label for="star1"
+                                        title="1 star">★</label>
+                                </div>
+                            </div>
+
+                            <div class="input-field-group">
+                                <label for="reviwer_comment">Write your Comment here</label>
+                                <textarea id="reviwer_comment" name="reviwer_comment" rows="4"
+                                    placeholder="Share your experience donating blood or requesting units..."
+                                    required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-submit-review">Submit for Moderation</button>
+                        </form>
+                    </div>
+
+                    <div class="reviews-showcase-wrapper">
+                        <div class="showcase-cards-stack">
+                            {% for review in reviews %}
+                            <div class="homepage-review-card">
+                                <div class="card-meta">
+                                    <div class="author-info">
+                                        <strong>{{ review.reviewer_name }}</strong>
+                                        <span class="role-badge">{{ review.reviewer_role}}</span>
+                                    </div>
+                                    <div class="card-stars">
+                                        {% if review.rating == 5 %}★★★★★{% elif review.rating == 4 %}★★★★☆{% elif review.rating == 3 %}★★★☆☆{% elif review.rating == 2 %}★★☆☆☆{% else %}★☆☆☆☆{% endif %}
+                                    </div>
+                                </div>
+                                <p class="quote-text">"{{ review.comment }}"</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="redirect-action-container">
+                            <p>Want to inspect more authenticated feedback logs?</p>
+                            <a href="/all-reviews/" class="btn-view-all-reviews">Show All Approved Reviews →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}
+

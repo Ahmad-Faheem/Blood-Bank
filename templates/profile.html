@@ -1,0 +1,271 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{page_title}}</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body>
+    <div id="toast-container" class="toast-container"></div>
+    <button id="backToTop" class="back-to-top" title="Go to top">
+        <img src="{% static 'images/up-arrow.svg' %}" alt="up-arrow">
+    </button>
+    <div class="modal-overlay"></div>
+    <header class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <img class="logo-icon" src="{% static 'images/logo-png.png' %}" alt="logo-icon">
+                <strong>REGIONAL<br><span>BLOOD BANK</span></strong>
+            </div>
+            <nav class="nav-links" id="navLinks">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'home' %}#eligibility-section">Eligibility</a>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'home' %}#inventory">Inventory</a>
+                <div class="profile-dropdown-wrapper">
+                    <div class="user-pill">
+                        {% if request.user.profile_image %}
+                        <img src="{{ request.user.profile_image.url }}" alt="profile-photo" class="avatar">
+                        {% else %}
+                        <div class="user-profile-icon avatar">
+                            <p>{% if request.user.full_name %} {{ request.user.full_name|slice:":1"|upper }} {% else %}
+                                {{ request.user.email|slice:":1"|upper }} {% endif %}</p>
+                        </div>
+                        {% endif %}
+                        <div class="user-info">
+                            <p id="user-name">{{ request.user.full_name|title|default:request.user.email }}</p>
+                            <p class="profile-user-status {% if request.user.status == 'ACTIVATE' %}active{% endif %}">
+                                {% if request.user.status == 'ACTIVATE' %} Active now {% else %} Deactivated {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <ul class="dropdown-menu-list">
+                        <li><a href="{% url 'user_profile' %}"><i class="fas fa-user-circle"></i> My Profile</a></li>
+                        <hr class="dropdown-divider">
+                        <li><a href="{% url 'User:user_logout' %}" class="logout-link"><i
+                                    class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
+                {% else %}
+                <a href="{% url 'User:register' %}">Register</a>
+                <a href="{% url 'User:login' %}"><button class="btn-login">Login</button></a>
+                {% endif %}
+            </nav>
+            <div class="menu-toggle" id="menuToggle">☰</div>
+        </div>
+    </header>
+
+    <main id="profile-section">
+        <div class="header-card">
+            <div class="header-details">
+                <div class="profile-header">
+                    <div class="profile-header-box">
+                        <div class="profile-avatar-box">
+                            {% if request.user.profile_image %}
+                            <img src="{{ request.user.profile_image.url }}" alt="profile-photo" class="profile-avatar">
+                            {% else %}
+                            <div class="user-profile-avatar profile-avatar">
+                                <p>{% if request.user.full_name %} {{ request.user.first_name|slice:":1"|upper }} {% else %}
+                                    {{ request.user.email|slice:":1"|upper }} {% endif %}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="header-name-box">
+                            <h1 class="profile-user-name">{{ request.user.full_name|title|default:request.user.email }}
+                            </h1>
+                            <p class="profile-user-status {% if request.user.status == 'ACTIVATE' %}active{% endif %}">
+                                {% if request.user.status == 'ACTIVATE' %} Active now {% else %} Deactivated {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <button class="edit-profile-btn"><i class="fas fa-edit"></i>Edit</button>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <b>Phone Number </b>
+                        {% if request.user.phone %}
+                        {{ request.user.country_code }} {{ request.user.phone }}
+                        {% else %} ***********
+                        {% endif %}
+                    </div>
+                    <div class="contact-item">
+                        <b>Email </b> {{ request.user.email }}
+                    </div>
+                    <div class="contact-item">
+                        <b>Address </b>
+                        {% if request.user.address %}
+                        {{ request.user.address }}
+                        {% else %} ---------------------
+                        {% endif %}
+                    </div>
+                    <div class="contact-item">
+                        <b>Description </b>
+                        {% if request.user.description %}
+                        {{ request.user.description }}
+                        {% else %} ---------------------
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="section-card history-section">
+                <h2 class="section-title"><i class="fas fa-history" style="color: #c0392b;"></i>My Activity History
+                </h2>
+
+                <div class="tabs-container history-tabs">
+                    <button class="history-tab active-btn" onclick="openHistoryTab(event, 'donor-history-tab')">Donation
+                        Registrations</button>
+                    <button class="history-tab" onclick="openHistoryTab(event, 'request-history-tab')">Blood
+                        Requests</button>
+                </div>
+
+                <div id="donor-history-tab" class="history-content active">
+                    {% if donor_history %}
+                    <div class="table-responsive">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Donor Name</th>
+                                    <th>Blood Group</th>
+                                    <th>Blood Type</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in donor_history %}
+                                <tr>
+                                    <td><strong>{{ record.donor_name|title }}</strong></td>
+                                    <td><span class="blood-badge">{{ record.blood_group }}</span></td>
+                                    <td>{{ record.donation_type|title }}</td>
+                                    <td>{{ record.created_at|date:"M d, Y" }}</td>
+                                    <td><span class="status-pill status-{{ record.status|lower }}">
+                                            {{ record.status }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="no-records"><i class="fas fa-folder-open"></i> You haven't registered as a donor yet.</p>
+                    {% endif %}
+                </div>
+
+                <div id="request-history-tab" class="history-content">
+                    {% if request_history %}
+                    <div class="table-responsive">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Patient Name</th>
+                                    <th>Blood Group</th>
+                                    <th>Units</th>
+                                    <th>Requested at</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in request_history %}
+                                <tr>
+                                    <td><strong>{{ req.patient_name|title }}</strong></td>
+                                    <td><span class="blood-badge">{{ req.blood_group }}</span></td>
+                                    <td>
+                                        {% if req.units_required == 1 %}
+                                        {{ req.units_required }} Unit
+                                        {% else %} {{ req.units_required }} Units
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ req.created_at|date:"M d, Y" }}</td>
+                                    <td><span class="status-pill status-{{ req.status|lower }}">{{ req.status }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="no-records"><i class="fas fa-folder-open"></i> You haven't placed any blood requests yet.
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </main>
+    <section id="edit-profile-section" class="">
+        <div id="profile-edit-modal">
+            <div id='form_heading'>
+                <h4>Edit your Profile</h4>
+                <p>Make changes to Profile and make sure to save it.</p>
+            </div>
+            <form id="profile-edit-form" method="POST">
+                {% csrf_token %}
+                <div class="profile-edit-modal-content">
+                    <div class="">
+                        <div class="media-box" onclick="document.getElementById('p_image').click()">
+                            <p><b>Upload Image</b><br>Change your Profile Image</p>
+                            <input type="file" id="p_image" hidden accept="image/*">
+                            <div id="img_preview" class="preview-container"></div>
+                        </div>
+                        <p class="errorMsg" style="margin-top : 7px;"></p>
+                    </div>
+                    <div class="profile-input-group">
+                        <input type="text" id="full_name" name="full_name" placeholder=" "
+                            value="{{ request.user.full_name|title }}">
+                        <label for="full_name">Full Name </label>
+                    </div>
+                    <div class="profile-input-group">
+                        <textarea id="address" name="address"
+                            rows="3">{% if request.user.address %}{{ request.user.address }}{% endif %}</textarea>
+                        <label for="address">Address </label>
+                    </div>
+                </div>
+                <div class="profile-edit-modal-content">
+                    <div class="profile-input-group">
+                        <select id="status" name="status" required>
+                            {% for key , value in profile_status.items %}
+                            {% if key == request.user.status %}
+                            <option value="{{ key }}" selected>{{ value }}</option>
+                            {% else %}
+                            <option value="{{ key }}">{{ value }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <label for="status">Account Status </label>
+                    </div>
+                    <div id="country_code_input_box">
+                        <select id="country_code" name="country_code">
+                            {% for key , value in countries.items %}
+                            {% if key == request.user.country_code %}
+                            <option value="{{ key }}" selected>{{ value }}</option>
+                            {% else %}
+                            <option value="{{ key }}">{{ value }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <div>
+                            <input id="phone" name="phone" type="tel"
+                                value="{% if request.user.phone %}{{ request.user.phone }}{% endif %}">
+                            <label for="phone">Phone Number </label>
+                            <span class="error-text"></span>
+                        </div>
+                    </div>
+                    <div class="profile-input-group">
+                        <textarea id="description" name="description"
+                            rows="5">{% if request.user.description %}{{ request.user.description }}{% endif %}</textarea>
+                        <label for="description">Profile Description </label>
+                    </div>
+                    <button type="submit" id="profile-save-btn" class="">Save</button>
+                </div>
+            </form>
+        </div>
+    </section>
+    <script src="{% static 'script.js' %}"></script>
+</body>
+
+</html>

@@ -1,0 +1,375 @@
+:root {
+    --primary: #c62828;
+    --primary-hover: #096660;
+    --gray-text: #696c6e;
+    --light-bg: #f4f7f6;
+    --white: #ffffff;
+    --border: #ced4da;
+    --error: #d9534f;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background-color: var(--light-bg);
+    padding: 40px 15px;
+    user-select: none;
+}
+
+input, textarea, [contenteditable="true"] {
+    user-select: text;
+}
+
+.wizard-container {
+    max-width: 700px;
+    margin: 0 auto;
+    background: var(--white);
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+}
+
+/* Stepper Header */
+.stepper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.stepper::before {
+    content: "";
+    position: absolute;
+    top: 15px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #e0e0e0;
+    z-index: 1;
+}
+
+.step-circle {
+    width: 37px;
+    height: 37px;
+    background: #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    font-weight: bold;
+    color: white;
+    transition: 0.3s;
+}
+
+.step-circle.active {
+    background: var(--primary);
+}
+
+.step-circle.completed {
+    background: var(--primary);
+}
+
+/* Typography */
+h2 {
+    font-size: 1.8rem;
+    color: var(--primary);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+p.subtitle {
+    font-size: 1.1rem;
+    color: var(--gray-text);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Form Layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+.input-container {
+    position: relative;
+    margin-bottom: 5px;
+}
+
+#country_code_input_box input,
+#country_code_input_box select,
+.input-container input,
+.input-container select,
+.input-container textarea {
+    width: 100%;
+    padding: 12px 18px;
+    border: 1px solid var(--border);
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    background: transparent;
+}
+
+.input-container textarea {
+    border-radius: 15px;
+    height: 100px;
+    resize: none;
+}
+
+#country_code_input_box label,
+.input-container label {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    padding: 0 5px;
+    color: #8a8a8a;
+    pointer-events: none;
+    transition: 0.2s;
+    font-size: 16px;
+}
+
+.input-container textarea+label {
+    top: 25px;
+}
+
+#country_code_input_box input+label,
+.input-container input:focus+label,
+.input-container input:not(:placeholder-shown)+label,
+.input-container select:focus+label,
+.input-container select:not([value=""]):valid+label,
+.input-container textarea:focus+label,
+.input-container textarea:not(:placeholder-shown)+label {
+    top: 0;
+    font-size: 14px;
+    color: var(--primary);
+}
+
+.input-container input:focus,
+.input-container textarea:focus {
+    border-color: var(--primary);
+}
+
+#relationship,
+#blood_type,
+#urgency_level,
+#date_of_birth,
+#blood_group,
+#donation_type,
+#gender {
+    cursor: pointer;
+}
+
+#relationship,
+#blood_type,
+#urgency_level,
+#blood_group,
+#donation_type,
+#gender {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+#urgency_time_input {
+    display: none;
+}
+
+#urgency_time_input.active {
+    display: block;
+}
+
+/* Custom File Input */
+.file-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.file-input-group label {
+    font-size: 14px;
+    color: var(--gray-text);
+    margin-left: 10px;
+}
+
+.file-input-group input {
+    font-size: 13px;
+}
+
+/* Radio Buttons */
+.radio-group {
+    margin-top: 10px;
+}
+
+.radio-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 8px;
+}
+
+.radio-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.radio-item input {
+    accent-color: var(--primary);
+    width: 18px;
+    height: 18px;
+}
+
+/* Navigation Buttons */
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 35px;
+}
+
+button {
+    padding: 12px 30px;
+    border-radius: 25px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-next {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-next:hover {
+    opacity: 0.9;
+}
+
+.btn-back {
+    background: #e0e0e0;
+    color: #555;
+}
+
+.btn-back:hover {
+    background: #d0d0d0;
+}
+
+.hidden {
+    display: none;
+}
+
+.error-text {
+    color: #d9534f;
+    font-size: 14px;
+    margin-left: 15px;
+}
+
+.required-star {
+    color: #d9534f;
+    font-size: 18px;
+}
+
+@media (max-width: 600px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+}
+
+#country_code_input_box {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    margin-bottom: 5px;
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+}
+
+#country_code_input_box input {
+    padding: 12px 5px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-left: none;
+}
+
+#country_code_input_box select {
+    cursor: pointer;
+    height: 47px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-right: none;
+}
+
+@media(max-width: 425px) {
+    body {
+        padding: 25px 15px;
+    }
+
+    .wizard-container {
+        padding: 20px;
+    }
+}
+
+#backend-global-errors {
+    margin-top: 30px;
+}
+
+.error-banner {
+    background-color: #fde8e8;
+    border: 1px solid #f8b4b4;
+    padding: 12px;
+    border-radius: 6px
+}
+
+.error-banner>p {
+    font-weight: bold;
+    color: #9b1c1c;
+    margin: 0 0 5px 0;
+}
+
+#backend-error-list {
+    list-style : none;
+    color: #c81e1e;
+    margin: 0;
+    padding-left: 20px;
+    font-size: 14px;
+}
+

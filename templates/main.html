@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{page_title}}</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body>
+    <div id="toast-container" class="toast-container"></div>
+    <button id="backToTop" class="back-to-top" title="Go to top">
+        <img src="{% static 'images/up-arrow.svg' %}" alt="up-arrow">
+    </button>
+    <div class="modal-overlay"></div>
+    <header class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <img class="logo-icon" src="{% static 'images/logo-png.png' %}" alt="logo-icon">
+                <strong>REGIONAL<br><span>BLOOD BANK</span></strong>
+            </div>
+            <nav class="nav-links" id="navLinks">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'home' %}#eligibility-section">Eligibility</a>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'home' %}#inventory">Inventory</a>
+                <div class="profile-dropdown-wrapper">
+                    <div class="user-pill">
+                        {% if request.user.profile_image %}
+                        <img src="{{ request.user.profile_image.url }}" alt="profile-photo" class="avatar">
+                        {% else %}
+                        <div class="user-profile-icon avatar">
+                            <p>{% if request.user.full_name %} {{ request.user.full_name|slice:":1"|upper }} {% else %}
+                                {{ request.user.email|slice:":1"|upper }} {% endif %}</p>
+                        </div>
+                        {% endif %}
+                        <div class="user-info">
+                            <p id="user-name">{{ request.user.full_name|title|default:request.user.email }}</p>
+                            <p class="profile-user-status {% if request.user.status == 'ACTIVATE' %}active{% endif %}">
+                                {% if request.user.status == 'ACTIVATE' %} Active now {% else %} Deactivated {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <ul class="dropdown-menu-list">
+                        <li><a href="{% url 'user_profile' %}"><i class="fas fa-user-circle"></i> My Profile</a></li>
+                        <hr class="dropdown-divider">
+                        <li><a href="{% url 'User:user_logout' %}" class="logout-link"><i
+                                    class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
+                {% else %}
+                <a href="{% url 'User:register' %}">Register</a>
+                <a href="{% url 'User:login' %}"><button class="btn-login">Login</button></a>
+                {% endif %}
+            </nav>
+            <div class="menu-toggle" id="menuToggle">☰</div>
+        </div>
+    </header>
+
+
+    {% block content %}
+    {% endblock %}
+
+
+    <footer class="blood-bank-footer">
+        <div class="urgent-alert">
+            <p><strong>URGENTLY NEEDED:</strong> Type O- & A- | Contact hotline for current emergency notifications.</p>
+        </div>
+
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="{% static 'images/logo-png.png' %}" alt="logo-icon">
+                    <strong>REGIONAL<br>BLOOD BANK</strong>
+                </div>
+                <p class="tagline">Dedicated to serving our community with a medical team since 2023.</p>
+            </div>
+
+            <div>
+                <div class="link-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'User:register_donor' %}">Register a Donor</a></li>
+                        <li><a href="{% url 'User:request_blood' %}">Request Blood</a></li>
+                        <li><a href="{% url 'home' %}#inventory">Inventory Overview</a></li>
+                        <li><a href="{% url 'home' %}#eligibility-section">Eligibility Critarea</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div>
+                <div class="link-column">
+                    <h3>Services & Support</h3>
+                    <ul>
+                        <li><a>Blood Processing</a></li>
+                        <li><a>Research & Development</a></li>
+                        <li><a>Rare Donor Registry</a></li>
+                        <li><a>Safety Guidelines</a></li>
+                        <li><a>Community Events</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="bottom-item">
+                <small>General Inquiries:</small>
+                <p>r21733-355@gmail.com</p>
+            </div>
+            <div class="bottom-item center">
+                <small>EMERGENCY HOTLINE (24/7):</small>
+                <p class="phone">-800-234-7990</p>
+            </div>
+            <div class="bottom-item right">
+                <a href="">Privacy Policy</a>
+                <a href="">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'script.js' %}"></script>
+</body>
+
+</html>

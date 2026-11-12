@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="header-card">
+    <div class="header-details">
+        <div class="profile-header">
+            <div class="profile-header-box">
+                <div class="profile-avatar">
+                    <img src="{% static '/images/Admin-Avatar.png' %}" alt="profile-icon">
+                </div>
+                <div class="header-name-box">
+                    <h1 class="admin-name">Admin Name</h1>
+                    <p class="admin-status active">Active now</p>
+                </div>
+            </div>
+            <button class="edit-profile-btn"><i class="fas fa-edit"></i>Edit</button>
+        </div>
+        <div class="contact-info">
+            <div class="contact-item">
+                <b>Phone number :</b>(555) 123-4567
+            </div>
+            <div class="contact-item">
+                <b>Email :</b> alex@example.com
+            </div>
+            <div class="contact-item">
+                <b>Address :</b>1234 Elm Street, Springfield, CA, 90210, United States
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section-card">
+    <h2 class="section-title"><i class="fas fa-info-circle" style="color: var(--primary-teal);"></i>Description</h2>
+    <div class="description-text">
+        Admin Description : ( Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat
+        laboriosam cum tenetur suscipit rem ut asperiores provident nesciunt commodi, voluptatem et
+        aspernatur. Dolores nemo dignissimos quam laborum corrupti, assumenda odit. At, doloremque sunt
+        repellendus officiis nam delectus ab unde recusandae. Quo consectetur voluptatibus quas tempora
+        deleniti, quaerat saepe necessitatibus, pariatur placeat molestias obcaecati ratione fugit sit!
+        Vitae quos accusamus autem! )
+    </div>
+</div>
+
+<section id="edit-profile-section" class="">
+    <div id="profile-edit-modal">
+        <div id='form_heading'>
+            <h4>Edit your Profile</h4>
+            <p>Make changes to your profile and make sure to save it.</p>
+        </div>
+        <form id="profile-edit-form" method="POST">
+            <div class="profile-edit-modal-content">
+                <div class="">
+                    <div class="media-box" onclick="document.getElementById('p_image').click()">
+                        <p><b>Upload Image</b><br>Change your Profile Image</p>
+                        <input type="file" id="p_image" hidden accept="image/*" required>
+                        <div id="img_preview" class="preview-container"></div>
+                    </div>
+                    <p class="errorMsg" style="margin-top : 7px;"></p>
+                </div>
+                <div class="profile-input-group">
+                    <input type="text" id="full_name" name="full_name" placeholder=" " required>
+                    <label for="full_name">Full Name <span class="required-star">*</span></label>
+                </div>
+                <div class="profile-input-group">
+                    <textarea id="address" name="address" rows="3" required></textarea>
+                    <label for="address">Address <span class="required-star">*</span></label>
+                </div>
+            </div>
+            <div class="profile-edit-modal-content">
+                <div class="profile-input-group">
+                    <select id="status" name="status" required>
+                        <option value="active">Activate</option>
+                        <option value="not-active">Deactivate</option>
+                    </select>
+                    <label for="status">Profile Status <span class="required-star">*</span></label>
+                </div>
+                <div id="country_code_input_box">
+                    <select id="country_code" name="country_code" required>
+                        <option value="+1">+1 (US)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+92" selected>+92 (PK)</option>
+                        <option value="+91">+91 (IN)</option>
+                    </select>
+                    <div>
+                        <input id="phone" name="phone" type="tel" required>
+                        <label for="phone">Phone Number <span class="required-star">*</span></label>
+                        <span class="error-text"></span>
+                    </div>
+                </div>
+                <div class="profile-input-group">
+                    <textarea id="description" name="description" rows="5" required></textarea>
+                    <label for="description">Profile Description <span class="required-star">*</span></label>
+                </div>
+                <button type="submit" id="profile-save-btn">Save</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{page_title}}</title>
+    <link rel="stylesheet" href="{% static 'base.css' %}">
+</head>
+
+<body>
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="admin-layout">
+        <div class="sidebar-overlay" id="overlay">
+            <aside class="sidebar">
+                <div class="logo">
+                    <img class="logo-icon" src="{% static 'images/blood-icon.png' %}" alt="logo-icon">
+                    <strong>REGIONAL<br>BLOOD BANK</strong>
+                </div>
+                <nav class="sidebar-menu">
+                    <a href="{% url 'User_Admin:dashboard' %}"
+                        class="nav-item {% if 'User-Admin/dashboard/' in request.path %}active{% endif %}">
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{% url 'User_Admin:notifications' %} "
+                        class="nav-item {% if 'User-Admin/notifications/' in request.path %}active{% endif %}">
+                        <span>Notifications</span>
+                    </a>
+                    <a href="{% url 'User_Admin:donors' %}"
+                        class="nav-item {% if 'User-Admin/donors/' in request.path %}active{% endif %}">
+                        <span>Donor Screening</span>
+                    </a>
+                    <a href="{% url 'User_Admin:requests' %}"
+                        class="nav-item {% if 'User-Admin/requests/' in request.path %}active{% endif %}">
+                        <span>Blood Requests</span>
+                    </a>
+                    <a href="{% url 'User_Admin:reports' %}"
+                        class="nav-item {% if 'User-Admin/reports/' in request.path %}active{% endif %}">
+                        <span>System Reports</span>
+                    </a>
+                    <a href="{% url 'User_Admin:reviews' %}"
+                        class="nav-item {% if 'User-Admin/reviews' in request.path %}active{% endif %}">
+                        <span>Reviews</span>
+                    </a>
+                    <a href="{% url 'User_Admin:settings' %}"
+                        class="nav-item {% if 'User-Admin/settings/' in request.path %}active{% endif %}">
+                        <span>Settings</span>
+                    </a>
+                    <a class="nav-item logout-link">
+                        <span>Log Out</span>
+                    </a>
+                </nav>
+            </aside>
+        </div>
+        <main class="main-content">
+            <header class="content-header">
+                <div class="left-section">
+                    <button class="menu-toggle" id="menuToggle">☰</button>
+                    <h2>Admin Panel</h2>
+                </div>
+                <div class="system-time"></div>
+                {% if request.user.is_authenticated %}
+                <div class="profile-dropdown-wrapper">
+                    <div class="user-pill">
+                        {% if request.user.profile_image %}
+                        <img src="{{ request.user.profile_image.url }}" alt="profile-photo" class="avatar">
+                        {% else %}
+                        <div class="user-profile-icon avatar">
+                            <p>{% if request.user.full_name %} {{ request.user.full_name|slice:":1"|upper }} {% else %}
+                                {{ request.user.email|slice:":1"|upper }} {% endif %}</p>
+                        </div>
+                        {% endif %}
+                        <div class="user-info">
+                            <p id="user-name">{{ request.user.full_name|title|default:request.user.email }}</p>
+                            <p class="profile-user-status {% if request.user.status == 'ACTIVATE' %}active{% endif %}">
+                                {% if request.user.status == 'ACTIVATE' %} Active now {% else %} Deactivated {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <ul class="dropdown-menu-list">
+                        <li><a href="{% url 'user_profile' %}"><i class="fas fa-user-circle"></i> My Profile</a></li>
+                        <hr class="dropdown-divider">
+                        <li><a href="{% url 'User:user_logout' %}" class="logout-link"><i
+                                    class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+            </header>
+            <section id="content-window">
+
+                {% block content %}
+                {% endblock %}
+
+            </section>
+            <div class="modal-overlay">
+                <div class="modal-box">
+                    <div class="modal-content">
+                        <h2 id="modal-title">Logout Confirmation</h2>
+                        <p id="modal-text">Are you sure to Logout from the Admin Panel.</p>
+
+                        <div class="modal-actions">
+                            <button class="btn btn-cancel">Cancel</button>
+                            <a href="{% url 'User_Admin:admin_logout' %}">
+                                <button class="btn btn-confirm">Log Out</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    <script src="{% static 'base.js' %}"></script>
+</body>
+
+</html>
